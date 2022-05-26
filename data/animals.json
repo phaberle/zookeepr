@@ -118,6 +118,28 @@
         "sweet"
       ],
       "id": "11"
+    },
+    {
+      "name": "Jumbo",
+      "species": "Elephant",
+      "diet": "herbivore",
+      "personalityTraits": [
+        "hungry",
+        "anxious",
+        "loving"
+      ],
+      "id": "12"
+    },
+    {
+      "name": "Jumbo",
+      "species": "Elephant",
+      "diet": "herbivore",
+      "personalityTraits": [
+        "hungry",
+        "anxious",
+        "loving"
+      ],
+      "id": "13"
     }
   ]
 }
