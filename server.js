@@ -1,6 +1,14 @@
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
+const fs = require('fs');
+const path = require('path');
+
+//parse incoming string or array data
+app.use(express.urlencoded({ extended: true }));
+//parse incoming JSON data
+app.use(express.json());
+
 //route
 const { animals } = require('./data/animals');
 
@@ -52,19 +60,71 @@ app.get('/api/animals', (req, res) => {
     res.json(results);
 })
 
-function findById(id, animalsArray){
+function findById(id, animalsArray) {
     const result = animalsArray.filter(animal => animal.id === id)[0];
     return result;
 }
 
+/*
+copies existing data, pushes new data to existing, sends updated data history plus new data
+Here, we're using the fs.writeFileSync() method, which is the synchronous version of fs.writeFile() and doesn't require a callback function. If we were writing to a much larger data set, the asynchronous version would be better. But because this isn't a large file, it will work for our needs. We want to write to our animals.json file in the data subdirectory, so we use the method path.join() to join the value of __dirname, which represents the directory of the file we execute the code in, with the path to the animals.json file.
+*/
+function createNewAnimal(body, animalsArray) {
+    const animal = body;
+    animalsArray.push(animal);
+    fs.writeFileSync(
+        path.join(__dirname, './data/animals.json'),
+        JSON.stringify({ animals: animalsArray }, null, 2)
+    )
+    return animal;
+}
+
+
+function validateAnimal(animal) {
+    if (!animal.name || typeof animal.name !== 'string') {
+        return false;
+    }
+    if (!animal.species || typeof animal.species !== 'string') {
+        return false;
+    }
+    if (!animal.diet || typeof animal.diet !== 'string') {
+        return false;
+    }
+    if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+        return false;
+    }
+    return true;
+}
+
+
+
 app.get('/api/animals/:id', (req, res) => {
     const result = findById(req.params.id, animals);
-    if(result){
+    if (result) {
         res.json(result);
-    }else{
+    } else {
         res.send(404);
     }
 })
+
+/*
+Updating IDs like used below will only work as long as we don't remove any data from animals.json.
+If we do, the id numbers will be thrown off and we'll end up with a duplicate value at some point.
+*/
+
+app.post('/api/animals', (req, res) => {
+    //set id based on what the next index of the array will be
+    req.body.id = animals.length.toString(); // <-- gets next id
+
+    //if any data in the req.body is incorrect, send 400 error back
+    if (!validateAnimal(req.body)) {
+        res.status(400).send('The animal is not properly formatted.');
+    } else {
+        //add animal to json file and animals array in this function
+        const animal = createNewAnimal(req.body, animals);
+        res.json(animal);
+    }
+});
 
 app.listen(PORT, () => {
     console.log('API server now on port 3001!');
