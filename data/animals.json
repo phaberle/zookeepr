@@ -140,6 +140,25 @@
         "loving"
       ],
       "id": "13"
+    },
+    {
+      "name": "Duke",
+      "species": "Labrodor",
+      "diet": "McDonalds",
+      "personalityTraits": [
+        "hungry",
+        "sweet"
+      ],
+      "id": "14"
+    },
+    {
+      "name": "Flipper",
+      "species": "Dolphin",
+      "diet": "omnivore",
+      "personalityTraits": [
+        "loving"
+      ],
+      "id": "15"
     }
   ]
 }
